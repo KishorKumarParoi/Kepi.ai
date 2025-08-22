@@ -11,6 +11,7 @@ export const userRegistration = async (
 ) => {
   validateRegistrationData(req.body, "user");
   const { name, email } = req.body;
+  console.log("name", name);
 
   const existingUser = await prismadb.users.findUnique({ where: email });
   if (existingUser) {
