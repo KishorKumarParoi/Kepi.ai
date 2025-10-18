@@ -2,6 +2,7 @@
   "name": "@kepi/source",
   "version": "0.0.0",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "npx nx run-many --target=serve --all"
   },
@@ -20,7 +21,8 @@
     "ioredis": "^5.8.1",
     "morgan": "^1.10.1",
     "nodemailer": "^7.0.9",
-    "prisma": "^6.14.0"
+    "prisma": "^6.14.0",
+    "redis": "^5.8.3"
   },
   "devDependencies": {
     "@nx/docker": "21.4.0",
