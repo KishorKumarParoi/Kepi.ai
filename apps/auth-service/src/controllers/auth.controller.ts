@@ -10,7 +10,7 @@
 
 import { NextFunction, Request, Response } from "express";
 import { ValidationError } from "../../../../packages/error-handler";
-import { validateRegistrationData } from "../utils/auth.helper";
+import { checkOtpRestrictions, validateRegistrationData } from "../utils/auth.helper";
 
 export const userRegistration = async (
   req: Request,
@@ -28,5 +28,6 @@ export const userRegistration = async (
   }
 
   // otp
-  
+  await checkOtpRestrictions(email, next);
+  // await trackOtpRequest(email, next);
 };
