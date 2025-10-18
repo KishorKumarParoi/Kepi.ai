@@ -41,12 +41,12 @@ const redis = createClient({
 });
 
 
-redis.on('error', err => console.log('Redis redis Error', err));
+// redis.on('error', err => console.log('Redis redis Error', err));
 
-await redis.connect();
+// await redis.connect();
 
-await redis.set('foo', 'bar');
-const result = await redis.get('foo');
-console.log(result)  // >>> bar
+// await redis.set('foo', 'bar');
+// const result = await redis.get('foo');
+// console.log(result)  // >>> bar
 
 export default redis
