@@ -10,24 +10,34 @@
 
 import { NextFunction, Request, Response } from "express";
 import { ValidationError } from "../../../../packages/error-handler";
-import { checkOtpRestrictions, validateRegistrationData } from "../utils/auth.helper";
+import { checkOtpRestrictions, sendOtp, trackOtpRequests, validateRegistrationData } from "../utils/auth.helper";
 
 export const userRegistration = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  validateRegistrationData(req.body, "user");
+  try {
+    validateRegistrationData(req.body, "user");
 
-  const { name, email } = req.body;
-  console.log("name", name);
+    const { name, email } = req.body;
+    console.log("name", name);
 
-  const existingUser = await prismadb.users.findUnique({ where: email });
-  if (existingUser) {
-    return next(new ValidationError("User already exists with this email!"));
+    const existingUser = await prismadb.users.findUnique({ where: email });
+    if (existingUser) {
+      return next(new ValidationError("User already exists with this email!"));
+    }
+
+    // otp
+    await checkOtpRestrictions(email, next);
+    await trackOtpRequests(email, next);
+    await sendOtp(name, email, 'user-activation-mail')
+
+    res.status(200).json({
+      status: "success",
+      message: "OTP sent to your email for verification.",
+    });
+  } catch (error) {
+    return next(error);
   }
-
-  // otp
-  await checkOtpRestrictions(email, next);
-  // await trackOtpRequest(email, next);
 };
