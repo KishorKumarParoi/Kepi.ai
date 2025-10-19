@@ -49,4 +49,4 @@ const redis = createClient({
 // const result = await redis.get('foo');
 // console.log(result)  // >>> bar
 
-export default redis
+export default redis;
