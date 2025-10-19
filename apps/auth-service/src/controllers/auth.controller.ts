@@ -8,7 +8,7 @@
 
 // Register a new user
 
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { ValidationError } from "../../../../packages/error-handler";
 import { checkOtpRestrictions, sendOtp, trackOtpRequests, validateRegistrationData } from "../utils/auth.helper";
 

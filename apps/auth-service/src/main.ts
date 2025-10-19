@@ -1,11 +1,19 @@
+import dotenv from "dotenv";
+import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
-import { errorMiddleware } from "../../../packages/error-handler/error-middleware";
 import router from "./routes/auth.router";
-import swaggerUi from "swagger-ui-express"
+import swaggerUi from "swagger-ui-express";
+import { errorMiddleware } from "../../../packages/error-handler/error-middleware";
 
-const swaggerDocument = require("./swagger-output.json");
+// Load .env from workspace root
+dotenv.config({
+  path: path.join(process.env.NX_WORKSPACE_ROOT ?? process.cwd(), ".env"),
+});
+
+// Load swagger document with proper path resolution
+const swaggerDocument = require(path.join(__dirname, "swagger-output.json"));
 
 const app = express();
 
@@ -25,15 +33,20 @@ app.get("/", (req, res) => {
 });
 
 // swagger setup
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-app.get("/api-docs", (req, res) => {
-  res.json(swaggerDocument); // Display the JSON document at /api-doc
-});
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Routes
 app.use("/api", router);
 
-// Error Middleware
+// 404 handler (must be before error middleware)
+app.use((req, res, next) => {
+  res.status(404).json({
+    error: "Route not found",
+    path: req.path,
+  });
+});
+
+// Error Middleware (must be last)
 app.use(errorMiddleware);
 
 const port = process.env.AUTH_PORT || 6001;
@@ -44,5 +57,16 @@ const server = app.listen(port, () => {
 });
 
 server.on("error", (err) => {
-  console.log("Server Error: ", err);
+  console.error("Server Error: ", err);
+});
+
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+});
+
+// Handle uncaught exceptions
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+  process.exit(1);
 });

@@ -1,8 +1,8 @@
 import crypto from "crypto";
-import { NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { sendEmail } from "./sendMail";
 import { ValidationError } from "../../../../packages/error-handler";
 import redis from "../../../../packages/libs/redis";
-import { sendEmail } from "./sendMail";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -60,3 +60,8 @@ export const sendOtp = async (name: string, email: string, template: string) => 
   await redis.set(`otp_cooldown:${email}`, "true", { EX: 60 }); // 1 minute cooldown
 }
 
+export const asyncHandler = (fn: Function) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+};
