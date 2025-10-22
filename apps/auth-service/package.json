@@ -2,9 +2,6 @@
   "name": "@kepi/auth-service",
   "version": "0.0.1",
   "private": true,
-  "scripts": {
-    "dev": "node src/main.ts"
-  },
   "nx": {
     "targets": {
       "build": {
@@ -40,6 +37,7 @@
             "nodemailer",
             "redis",
             "@prisma/client",
+            ".prisma/client",
             "dotenv",
             "ejs"
           ],
@@ -81,7 +79,9 @@
     }
   },
   "dependencies": {
-    "express": "^4.21.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "swagger-ui-express": "^5.0.1"
   }
 }
