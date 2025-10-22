@@ -25,7 +25,7 @@
                   "example": "Kishor Paroi"
                 },
                 "email": {
-                  "example": "Kishor.ruet.cse@gmail.com"
+                  "example": "kishor.ruet.cse@gmail.com"
                 },
                 "password": {
                   "example": "securepassword123"
@@ -37,6 +37,39 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/verify-user": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "kishor.ruet.cse@gmail.com"
+                },
+                "otp": {
+                  "example": "100200"
+                },
+                "password": {
+                  "example": "securepassword123"
+                },
+                "name": {
+                  "example": "Kishor Paroi"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
           }
         }
       }
