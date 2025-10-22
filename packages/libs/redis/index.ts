@@ -1,52 +1,42 @@
-// import { createClient } from "redis"
-// import path from "path";
-// import dotenv from "dotenv";
-
-// // Load .env from workspace root
-// dotenv.config({
-//   path: path.join("../../../.env"),
-// });
-
-// const client = createClient({
-//   url: process.env.REDIS_URL
-// });
-
-// console.log(process.env.REDIS_URL);
-
-// client.on("error", function (err) {
-//   throw err;
-// });
-// await client.connect()
-// await client.set('foo', 'bar');
-
-// // Disconnect after usage
-// await client.disconnect();
-
-import { createClient } from 'redis';
+import { createClient, type RedisClientType } from 'redis';
 import path from "path";
 import dotenv from "dotenv";
 
-// Load .env from workspace root
+// Load .env from workspace root using NX_WORKSPACE_ROOT
 dotenv.config({
-  path: path.join("../../../.env"),
+  path: path.join(process.env.NX_WORKSPACE_ROOT ?? process.cwd(), ".env"),
 });
 
-const redis = createClient({
-  username: process.env.REDIS_USERNAME,
-  password: process.env.REDIS_PASSWORD,
-  socket: {
-    host: process.env.REDIS_HOST,
-    port: Number(process.env.REDIS_PORT),
+let client: RedisClientType | undefined;
+
+export async function getRedis(): Promise<RedisClientType> {
+  if (client?.isOpen) {
+    return client;
   }
-});
 
+  const url = process.env.REDIS_URL;
 
-// redis.on('error', err => console.log('Redis redis Error', err));
+  if (!url) {
+    throw new Error("REDIS_URL not configured in .env");
+  }
 
-// await redis.connect();
+  client = createClient({ url });
 
-// await redis.set('foo', 'bar');
-// const result = await redis.get('foo');
-// console.log(result)  // >>> bar
+  client.on('error', (err) => console.error('Redis Client Error:', err));
 
-export default redis;
+  if (!client.isOpen) {
+    await client.connect();
+    console.log('✅ Redis connected successfully');
+  }
+
+  return client;
+}
+
+export async function quitRedis() {
+  if (client?.isOpen) {
+    await client.quit();
+    console.log('Redis connection closed');
+  }
+}
+
+// Don't create top-level connections or default export
