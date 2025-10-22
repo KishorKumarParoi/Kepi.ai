@@ -4,6 +4,13 @@
   "private": true,
   "nx": {
     "targets": {
+      "swagger-generate": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "node apps/auth-service/src/swagger.js",
+          "cwd": "{workspaceRoot}"
+        }
+      },
       "build": {
         "executor": "@nx/esbuild:esbuild",
         "outputs": [
@@ -37,9 +44,11 @@
             "nodemailer",
             "redis",
             "@prisma/client",
-            ".prisma/client",
             "dotenv",
-            "ejs"
+            "ejs",
+            "cookie-parser",
+            "cors",
+            "bcryptjs"
           ],
           "esbuildOptions": {
             "sourcemap": true,
@@ -79,9 +88,10 @@
     }
   },
   "dependencies": {
-    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
+    "swagger-ui-express": "^5.0.1",
+    "cookie-parser": "^4.0.0",
     "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "swagger-ui-express": "^5.0.1"
+    "bcryptjs": "^2.4.3"
   }
 }
