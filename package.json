@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "npx nx run-many --target=serve --all",
+    "auth-docs": "nx run @kepi/auth-service:swagger-generate",
     "postinstall": "prisma generate"
   },
   "private": true,
