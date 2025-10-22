@@ -26,6 +26,9 @@
                 },
                 "email": {
                   "example": "Kishor.ruet.cse@gmail.com"
+                },
+                "password": {
+                  "example": "securepassword123"
                 }
               }
             }
