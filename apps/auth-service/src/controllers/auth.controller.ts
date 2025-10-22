@@ -1,17 +1,8 @@
-/**
- * At first checking user registration data
- * validate the form data
- * check if user exists or not
- * if not exist create new user
- * (Check OTP Restriction)
-*/
-
-// Register a new user
-
 import { prismadb } from './../../../../packages/libs/prisma/index';
 import { NextFunction, Request, Response } from "express";
 import { ValidationError } from "../../../../packages/error-handler";
 import { checkOtpRestrictions, sendOtp, trackOtpRequests, validateRegistrationData, verifyOtp } from "../utils/auth.helper";
+import bcrypt from "bcryptjs";
 
 export const userRegistration = async (
   req: Request,
@@ -70,7 +61,18 @@ export const verifyUser = async (req: Request, res: Response, next: NextFunction
     await verifyOtp(email, otp, next);
 
     // password hash
-    
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await prismadb.users.create({
+      data: {
+        name, email, password: hashedPassword, following: [],
+      }
+    })
+
+    res.status(201).json({
+      status: "success",
+      message: "User registered successfully.",
+    });
+
   } catch (error) {
     return next(error);
   }
