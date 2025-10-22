@@ -3,7 +3,6 @@ import { NextFunction, Request, Response } from 'express';
 import { sendEmail } from "./sendMail";
 import { ValidationError } from "../../../../packages/error-handler";
 import { getRedis } from "../../../../packages/libs/redis";
-import { fail } from "assert";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -87,7 +86,7 @@ export const verifyOtp = async (email: string, otp: string, next: NextFunction) 
   }
 
   const failedAttemptsKey = `otp_attempts:${email}`;
-  const failedAttempts = parseInt((await redis.get(failedAttemptsKey)) || "0");
+  let failedAttempts = parseInt((await redis.get(failedAttemptsKey)) || "0");
 
   if (storedOtp !== otp) {
     if (failedAttempts >= 2) {
@@ -96,7 +95,8 @@ export const verifyOtp = async (email: string, otp: string, next: NextFunction) 
       return next(new ValidationError("Too many incorrect attempts. OTP locked for 30 minutes."));
     }
 
-    await redis.set(failedAttemptsKey, (failedAttempts + 1), { EX: 5 * 60 });
+    ++failedAttempts;
+    await redis.set(failedAttemptsKey, failedAttempts, { EX: 5 * 60 });
     return next(
       new ValidationError(`Incorrect OTP. ${2 - failedAttempts} attempts left.`)
     )
