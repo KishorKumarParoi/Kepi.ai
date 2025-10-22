@@ -15,19 +15,19 @@ datasource db {
 }
 
 model images {
-  id      String  @id @default(uuid()) @map("_id") @db.ObjectId
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
   file_id String
   url     String
   userId  String? @unique @db.ObjectId
-  users   users?  @relation(fields: [userId], references: [id])
+  user    users?  @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model users {
-  id        String   @id @default(uuid()) @map("_id") @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String   @unique
   password  String?
-  following String[]
+  following String[] @default([])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
