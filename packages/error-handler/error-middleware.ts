@@ -1,5 +1,5 @@
-import { AppError } from './index';
 import { Request, Response, NextFunction } from "express";
+import { AppError } from "./index.js";
 
 export const errorMiddleware = (
   err: any, // Change from Error to any to catch all error types
