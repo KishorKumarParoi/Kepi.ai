@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction } from 'express';
 import { sendEmail } from "./sendMail";
 import { ValidationError } from "../../../../packages/error-handler";
 import { getRedis } from "../../../../packages/libs/redis";
@@ -33,11 +33,11 @@ export const trackOtpRequests = async (email: string, next: NextFunction) => {
   let otpRequests = parseInt((await redis.get(otpRequestKey)) || "0");
 
   if (otpRequests >= 2) {
-    await redis.set(`otp_spam_lock:${email}`, "locked", { EX: 60 * 60 }); // 1 hour lock
+    await redis.set(`otp_spam_lock:${email}`, "locked", { EX: parseInt(process.env.OTP_SPAM_LOCK_TIME!) }); // 1 hour lock
     return next(new ValidationError("Frequent Requests. Please try again later after 1 hour."));
   }
 
-  await redis.set(otpRequestKey, (otpRequests + 1).toString(), { EX: 60 * 60 });
+  await redis.set(otpRequestKey, (otpRequests + 1).toString(), { EX: parseInt(process.env.OTP_REQUEST_WINDOW!) });
 }
 
 export const checkOtpRestrictions = async (email: string, next: NextFunction) => {
@@ -63,19 +63,14 @@ export const sendOtp = async (name: string, email: string, template: string) => 
   console.log(`📧 Sending OTP to: ${email}`);
   await sendEmail(email, "Verify Your Email", template, { name, otp });
 
-  await redis.set(`otp:${email}`, otp, { EX: 5 * 60 }); // OTP valid for 5 minutes
-  await redis.set(`otp_cooldown:${email}`, "true", { EX: 60 }); // 1 minute cooldown
+  await redis.set(`otp:${email}`, otp, { EX: parseInt(process.env.OTP_EXPIRES_IN!) }); // OTP valid for 5 minutes
+  await redis.set(`otp_cooldown:${email}`, "true", { EX: parseInt(process.env.OTP_COOLDOWN_TIME!) }); // 1 minute cooldown
 
   const storedOtp = await redis.get(`otp:${email}`);
   console.log(`✅ OTP stored in Redis for ${email}: ${storedOtp}`);
   console.log(`🔑 Generated OTP: ${otp}`);
 }
 
-export const asyncHandler = (fn: Function) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
-  };
-};
 
 export const verifyOtp = async (email: string, otp: string, next: NextFunction) => {
   const redis = await getRedis();
@@ -86,19 +81,18 @@ export const verifyOtp = async (email: string, otp: string, next: NextFunction) 
   }
 
   const failedAttemptsKey = `otp_attempts:${email}`;
-  let failedAttempts = parseInt((await redis.get(failedAttemptsKey)) || "0");
+  const failedAttempts = parseInt((await redis.get(failedAttemptsKey)) || "0");
 
   if (storedOtp !== otp) {
     if (failedAttempts >= 2) {
-      await redis.set(`otp_lock:${email}`, "locked", { EX: 30 * 60 }); // 30 minutes lock
+      await redis.set(`otp_lock:${email}`, "locked", { EX: parseInt(process.env.OTP_LOCK_TIME!) }); // 30 minutes lock
       await redis.del([`otp:${email}`, failedAttemptsKey]);
       return next(new ValidationError("Too many incorrect attempts. OTP locked for 30 minutes."));
     }
 
-    ++failedAttempts;
-    await redis.set(failedAttemptsKey, failedAttempts, { EX: 5 * 60 });
+    await redis.set(failedAttemptsKey, (failedAttempts + 1).toString(), { EX: parseInt(process.env.FAILED_ATTEMPT_EXPIRES_IN!) });
     return next(
-      new ValidationError(`Incorrect OTP. ${2 - failedAttempts} attempts left.`)
+      new ValidationError(`Incorrect OTP. ${process.env.OTP_REQUEST_LIMIT!} - failedAttempts} attempts left.`)
     )
   }
 
