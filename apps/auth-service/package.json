@@ -48,7 +48,8 @@
             "ejs",
             "cookie-parser",
             "cors",
-            "bcryptjs"
+            "bcryptjs",
+            "jsonwebtoken"
           ],
           "esbuildOptions": {
             "sourcemap": true,
@@ -88,10 +89,14 @@
     }
   },
   "dependencies": {
-    "express": "^4.21.2",
-    "swagger-ui-express": "^5.0.1",
-    "cookie-parser": "^4.0.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "bcryptjs": "^2.4.3"
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10"
   }
 }
