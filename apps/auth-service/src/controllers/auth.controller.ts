@@ -1,4 +1,3 @@
-import { verifyUser } from './auth.controller';
 import { prismadb } from './../../../../packages/libs/prisma/index';
 import { NextFunction, Request, Response } from "express";
 import { ValidationError } from "../../../../packages/error-handler";

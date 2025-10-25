@@ -18,7 +18,7 @@ app.use(
 app.use(morgan("dev"));
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
-app.use(cookieParser());
+app.use(cookieParser() as any);
 app.set("trust proxy", 1);
 // This tells Express to trust the first proxy in front of your app (e.g., when deployed behind Nginx, Heroku, or a load balancer).
 // It ensures that req.ip and other proxy-related headers are set correctly, which is important for rate limiting, logging, and security.
@@ -30,7 +30,7 @@ const limiter = rateLimit({
   message: { error: "Too many requests, please try again later!" },
   standardHeaders: true,
   legacyHeaders: true,
-  // keyGenerator: (req: any) => req.ip,
+  keyGenerator: (req: any) => req.ip,
 });
 
 app.use(limiter);
@@ -39,7 +39,7 @@ app.get("/gateway-health", (req, res) => {
   res.send({ message: "Welcome to api-gateway!" });
 });
 
-app.use("/", proxy("http://localhost:6001"));
+app.use("/", proxy("http://localhost:6001") as any);
 
 const port = process.env.API_GATEWAY_PORT || 8080;
 
