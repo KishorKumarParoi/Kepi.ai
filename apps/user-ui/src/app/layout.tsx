@@ -28,7 +28,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${roboto.className} ${poppins.className} `}>
         <Header />
-        {children}
+        <main className='pt-[200px]'>
+          {children}
+        </main>
       </body>
     </html>
   )

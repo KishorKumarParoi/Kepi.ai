@@ -1,28 +1,34 @@
-import React from 'react'
-import Link from 'next/link'
+import React from 'react';
+import Link from 'next/link';
+import HeaderBottom from './header-bottom';
 
 const Header = () => {
   return (
-    <div className='w-full bg-white'>
-      <div
-        className='w-[80%] m-auto py-5 auto flex items-center justify-between bg-red-500'
-      >
-        <div>
-          <Link href='/' className='text-2xl font-bold text-gray-800'>
-            <span className='text-3xl font-[500'>Kepi</span>
-          </Link>
-        </div>
-        <div className='w-[50%] relative'>
-          <input type='text'
-            placeholder='Search for products...'
-            className='w-full px-4 font-Poppins font-medium border-[3px] border-blue-500 outline-none h-[55px]' />
-          <div className='w-[60px] cursor-pointer flex items-center justify-center h-[55px] absolute top-0 right-0 '>
-
+    <header className='fixed top-0 left-0 right-0 z-50 bg-white shadow-md'>
+      {/* Top Bar */}
+      <div className='bg-gradient-to-r from-blue-600 to-purple-600 text-white py-1'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+          <div className='flex justify-between items-center text-sm'>
+            <p className='hidden md:block'>
+              ✨ Free shipping on orders over $50 | Use code:{' '}
+              <span className='font-semibold'>Tesla</span>
+            </p>
+            <div className='flex items-center gap-4 ml-auto'>
+              <Link href='/help' className='hover:underline'>
+                Help
+              </Link>
+              <span>|</span>
+              <Link href='/track' className='hover:underline'>
+                Track Order
+              </Link>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  )
-}
+      {/* Navigation Bar */}
+      <HeaderBottom />
+    </header>
+  );
+};
 
-export default Header
+export default Header;
