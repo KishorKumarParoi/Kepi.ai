@@ -6,10 +6,6 @@ import Link from 'next/link';
 import { Search, User, ShoppingCart, Heart } from 'lucide-react';
 import {
   Smartphone,
-  Laptop,
-  Watch,
-  Headphones,
-  Camera,
   Shirt,
   Home,
   Dumbbell,

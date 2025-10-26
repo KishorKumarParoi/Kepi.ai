@@ -1,4 +1,4 @@
-import Header from '@/components/Header';
+import Header from './components/Header';
 import './global.css';
 import { Poppins, Roboto } from 'next/font/google'
 
